@@ -1,37 +1,31 @@
+# ============================================================
+# .htaccess — إعادة الكتابة إلى الواجهة الأمامية MVC (index.php)
+# ============================================================
+
 RewriteEngine On
+RewriteBase /
 
-RewriteRule ^forum.php&id=([0-9]+)$ home.php?op=forum&id=$1 [L]
-RewriteRule ^forum.php&id=([0-9]+)&page=([0-9]+)$ home.php?op=forum&id=$1&page=$2 [L]
-RewriteRule ^topic.php&id=([0-9]+)$ home.php?op=topic&id=$1 [L]
-RewriteRule ^topic.php&id=([0-9]+)&n=([0-9]+)$ home.php?op=topic&id=$1&n=$2 [L]
-RewriteRule ^blog.html$ home.php?page=blog [L]
-RewriteRule ^last.html$ home.php?page=last [L]
-RewriteRule ^sticky.html$ home.php?page=sticky [L]
-RewriteRule ^forums.html$ home.php?page=forums [L]
-RewriteRule ^mixt.html$ home.php?page=mixt [L]
-RewriteRule ^notifications.html$ home.php?op=noti [L]
-RewriteRule ^profile.php$ users.php?op=profile [L]
-RewriteRule ^profile.edit$ users.php?op=edit.profile [L]
-RewriteRule ^edit.sig$ users.php?op=edit.sig [L]
-RewriteRule ^friends$ users.php?op=friends [L]
-RewriteRule ^friends.add$ users.php?op=friends&type=add&u=$1 [L]
-RewriteRule ^friends.accp$ users.php?op=friends&type=accept&u=$1 [L]
+# 1) الملفات والمجلدات الحقيقية تُخدم مباشرة (css, js, img, install...)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-RewriteRule ^register.php index.php?op=register [L]
-RewriteRule ^sign-up.joined index.php?op=joined [L]
+# 2) الروابط القديمة => روابط الراوتر الجديدة
+RewriteRule ^blog\.html$        /home            [L,QSA]
+RewriteRule ^last\.html$        /home?page=last  [L,QSA]
+RewriteRule ^sticky\.html$      /home?page=sticky [L,QSA]
+RewriteRule ^forums\.html$      /forums          [L,QSA]
+RewriteRule ^mixt\.html$        /home?page=mixt  [L,QSA]
 
+RewriteRule ^forum\.php&id=([0-9]+)$                 /forum/$1 [L,QSA]
+RewriteRule ^forum\.php&id=([0-9]+)&page=([0-9]+)$   /forum/$1?page=$2 [L,QSA]
+RewriteRule ^topic\.php&id=([0-9]+)$                 /topic/$1 [L,QSA]
+RewriteRule ^topic\.php&id=([0-9]+)&n=([0-9]+)$      /topic/$1/$2 [L,QSA]
 
-#RewriteRule ^topic([0-9]+)$ topic.php?id=$1 [L]
-#RewriteRule ^user([0-9]+)$ user.php?id=$1 [L]
+RewriteRule ^notifications\.html$ /home?op=noti [L,QSA]
+RewriteRule ^profile\.php$        /user         [L,QSA]
+RewriteRule ^register\.php$       /register     [L,QSA]
+RewriteRule ^sign-up\.joined$     /register     [L,QSA]
 
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-#RewriteRule ^(.+)$ index.php?uri=$1 [QSA,L]
-#RewriteRule ^(.+)$ forum.php?id=$1 [QSA,L]
-
-
-#RewriteRule ^members ?op=users [L]
-#RewriteRule ^forum([0-9]+)$ ?op=forum&id=$1 [L]
-#RewriteRule ^topic([0-9]+)$ ?op=topic&id=$1 [L]
+# 3) كل ما عدا ذلك يمر عبر الواجهة الأمامية MVC
+RewriteRule ^(.*)$ index.php [QSA,L]
